@@ -1,8 +1,5 @@
-# h. Predict the targets for both the train and test sets 
-# and add the prediction as a new column 
-# (use predict_proba from the model to get 
-# the predicted probabilities) name the new column 
-# something like predictions.
+# i. Compute the train and test roc_auc metric 
+# using roc_auc_score from sklearn.
 
 from typing import Sequence, Tuple
 import pandas as pd
