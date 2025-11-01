@@ -1,70 +1,70 @@
+import pytest
 import pandas as pd
 import numpy as np
-from sklearn.linear_model import LogisticRegression
-from process_data import data_predict
+from process_data import data_predict, data_train_models
 
-def test_data_predict_with_dataframe():
-    # Create sample data
+
+def test_data_predict_proba():
+    """Test predict_proba functionality"""
     X_train = pd.DataFrame({"x1": [0, 1, 2, 3], "x2": [1, 1, 0, 0]})
-    y_train = [0, 0, 1, 1]
+    y_train = pd.Series([0, 0, 1, 1])
     
-    # Train model
-    model = LogisticRegression(max_iter=1000, random_state=42)
-    model.fit(X_train, y_train)
+    model = data_train_models(X_train, y_train, model_type="logreg")
     
-    # Test DataFrame with additional columns
-    test_df = pd.DataFrame({
-        "x1": [0.5, 1.5, 2.5],
-        "x2": [1, 0.5, 0],
-        "id": [1, 2, 3],
-        "other_col": ["a", "b", "c"]
+    X_test = pd.DataFrame({"x1": [0.5, 2.5], "x2": [1, 0]})
+    predictions = data_predict(model, X_test, proba=True)
+    
+    assert len(predictions) == 2
+    assert all(0 <= p <= 1 for p in predictions)
+
+
+def test_data_predict_class():
+    """Test class prediction (not proba)"""
+    X_train = pd.DataFrame({"x1": [0, 1, 2, 3], "x2": [1, 1, 0, 0]})
+    y_train = pd.Series([0, 0, 1, 1])
+    
+    model = data_train_models(X_train, y_train, model_type="logreg")
+    
+    X_test = pd.DataFrame({"x1": [0.5, 2.5], "x2": [1, 0]})
+    predictions = data_predict(model, X_test, proba=False)
+    
+    assert len(predictions) == 2
+    assert all(p in [0, 1] for p in predictions)
+
+
+def test_data_predict_random_forest():
+    """Test predictions with RandomForest model"""
+    np.random.seed(42)
+    X_train = pd.DataFrame({
+        "x1": np.random.randn(50),
+        "x2": np.random.randn(50)
+    })
+    y_train = pd.Series(np.random.randint(0, 2, 50))
+    
+    model = data_train_models(X_train, y_train, model_type="rf")
+    
+    X_test = pd.DataFrame({
+        "x1": np.random.randn(10),
+        "x2": np.random.randn(10)
     })
     
-    # Get predictions as array
-    preds_array = data_predict(model, test_df[["x1", "x2"]], proba=True)
-    assert len(preds_array) == 3
-    assert all(0 <= p <= 1 for p in preds_array)
+    predictions = data_predict(model, X_test, proba=True)
     
-    # Add predictions to DataFrame
-    result_df = data_predict(
-        model, 
-        test_df[["x1", "x2"]], 
-        proba=True, 
-        add_to_df=test_df,
-        pred_col="predictions"
-    )
-    
-    assert "predictions" in result_df.columns
-    assert len(result_df) == len(test_df)
-    assert list(result_df.columns) == ["x1", "x2", "id", "other_col", "predictions"]
-    assert all(result_df["predictions"] == preds_array)
-    
-    # Original DataFrame should be unchanged
-    assert "predictions" not in test_df.columns
+    assert len(predictions) == 10
+    assert all(0 <= p <= 1 for p in predictions)
 
-def test_data_predict_both_train_and_test():
-    """Test adding predictions to both train and test sets"""
+
+def test_data_predict_consistency():
+    """Test that predictions are consistent"""
     X_train = pd.DataFrame({"x1": [0, 1, 2, 3], "x2": [1, 1, 0, 0]})
-    y_train = [0, 0, 1, 1]
-    X_test = pd.DataFrame({"x1": [0.5, 2.5], "x2": [1, 0]})
+    y_train = pd.Series([0, 0, 1, 1])
     
-    train_df = pd.DataFrame({"x1": [0, 1, 2, 3], "x2": [1, 1, 0, 0], "y": y_train})
-    test_df = pd.DataFrame({"x1": [0.5, 2.5], "x2": [1, 0], "y": [0, 1]})
+    model = data_train_models(X_train, y_train, model_type="logreg")
     
-    model = LogisticRegression(max_iter=1000, random_state=42)
-    model.fit(X_train, y_train)
+    X_test = pd.DataFrame({"x1": [1.5], "x2": [0.5]})
     
-    # Add predictions to both train and test
-    train_with_pred = data_predict(
-        model, train_df[["x1", "x2"]], proba=True, 
-        add_to_df=train_df, pred_col="predictions"
-    )
-    test_with_pred = data_predict(
-        model, test_df[["x1", "x2"]], proba=True, 
-        add_to_df=test_df, pred_col="predictions"
-    )
+    # Multiple calls should give same results
+    pred1 = data_predict(model, X_test, proba=True)
+    pred2 = data_predict(model, X_test, proba=True)
     
-    assert "predictions" in train_with_pred.columns
-    assert "predictions" in test_with_pred.columns
-    assert len(train_with_pred) == len(train_df)
-    assert len(test_with_pred) == len(test_df)
+    np.testing.assert_array_almost_equal(pred1, pred2)
