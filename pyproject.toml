@@ -11,9 +11,9 @@ license = { text = "MIT" }
 requires-python = ">=3.8"
 authors = [{ name = "Elvis Casco" }]
 dependencies = [
-  "numpy>=2.3.4",
-  "pandas>=2.3.3",
-  "scikit-learn>=1.1,<2.0"
+    "pandas>=1.3.0",
+    "numpy>=1.21.0",
+    "scikit-learn>=1.0.0",
 ]
 
 [project.optional-dependencies]
