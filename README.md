@@ -5,7 +5,7 @@ This exercise was developed by:
 - Mariajosé Argote
 - Elvis Casco
 
-We created tests for the functions in `hw4.py`.
+We created tests for the functions in `hw4.py` in the file `test_hw4.py`.
 
 The functions, in the folder `src/process_data` let the user to:
 
