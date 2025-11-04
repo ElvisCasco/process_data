@@ -36,3 +36,28 @@ def test_get_day_month_year_basic():
     assert len(df) == 4
 
     assert df.loc[0, "year"] == 1992
+
+
+#test 3
+
+from hw4 import compute_distance, sum_general_int_list
+from geopy.distance import geodesic
+
+def test_compute_distance_basic():
+    coords = [
+        ((41.23, 23.5), (41.5, 23.4)),
+        ((52.38, 20.1), (52.3, 17.8))
+    ]
+
+    result = compute_distance(coords)
+
+    expected_distances = [
+        geodesic((41.23, 23.5), (41.5, 23.4)).km,
+        geodesic((52.38, 20.1), (52.3, 17.8)).km
+    ]
+
+    for res, exp in zip(result, expected_distances):
+        assert abs(res - exp) < 0.01  # Allow a small margin of error of 1%
+        assert len(result) == 2
+        assert all(isinstance(d, float) for d in result)
+
