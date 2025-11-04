@@ -22,7 +22,7 @@ class Patient:
     def __init__(self, name: str, symptoms: list):
         self.name = name
         self.symptoms = symptoms
-
+        self.tests = {}
 
 #
 # 1.2)
@@ -35,7 +35,7 @@ class Patient:
 
 
     def add_test(self, test_name: str, test_result: bool):
-        self.add_test = {test_name: test_result}
+        self.tests[test_name] =  test_result
 
 #
 # 1.3)
@@ -58,7 +58,7 @@ class Patient:
 
 
     def has_covid(self) -> float:
-        if 'covid' in self.add_test:
+        if 'covid' in self.tests:
             if self.add_test['covid']:
                 return 0.99
             else:
@@ -74,13 +74,13 @@ class Patient:
 
 ## Testing:
 Majo = Patient("Majo", ["fever", "cough", "fever"])
-Majo.add_test("covid", False)
+Majo.tests("covid", False)
 print(Majo.has_covid())
 
 
 ## not covid test
 Majo = Patient("Majo", ["fever", "cough", "fever"])
-Majo.add_test("flu", False)
+Majo.tests("flu", False)
 print(Majo.has_covid())
 
 
