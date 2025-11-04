@@ -61,3 +61,16 @@ def test_compute_distance_basic():
         assert len(result) == 2
         assert all(isinstance(d, float) for d in result)
 
+# Test 4 
+
+from hw4_sum import sum_general_int_list
+
+def test_sum_general_int_list_basic():
+    nested_list = [
+        [10, 9, 8],
+        [7, 6],
+        [5],4,3,2,1]
+
+    result = sum_general_int_list(nested_list)
+
+    assert result == 55  # 10+9+8+7+6+5+4+3+2+1 = 55
