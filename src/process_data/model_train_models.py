@@ -17,7 +17,7 @@ from sklearn.base import BaseEstimator
 from sklearn.linear_model import LogisticRegression
 from sklearn.ensemble import RandomForestClassifier
 
-def data_train_models(
+def model_train_models(
     X: ArrayLike,
     y: ArrayLike,
     model: Optional[BaseEstimator] = None,

@@ -8,7 +8,7 @@ from typing import Union, Optional
 import pandas as pd
 from numpy.typing import ArrayLike
 
-def data_predict(
+def model_predict(
     model, 
     X: Union[pd.DataFrame, ArrayLike], 
     proba: bool = False,
